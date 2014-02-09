@@ -1,0 +1,24 @@
+{
+  "name": "charlottejs-node-express-demo",
+  "version": "0.1.0",
+  "description": "Demo project for NodeJS intro meetup.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/james-huston/charlottejs-node-express-demo.git"
+  },
+  "author": "James Huston <james@jameshuston.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/james-huston/charlottejs-node-express-demo/issues"
+  },
+  "homepage": "https://github.com/james-huston/charlottejs-node-express-demo",
+  "dependencies": {
+    "ejs": "~0.8.5",
+    "express": "~3.4.8",
+    "superagent": "~0.16.0"
+  }
+}

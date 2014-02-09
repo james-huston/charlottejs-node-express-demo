@@ -24,13 +24,13 @@ describe('The GeoLookup module', function () {
 
   describe('with a valid zipcode', function () {
     it('should return long/lat for a real zip', function (done) {
-      lookup('90210', function (err, longitude, lattitude) {
+      lookup('90210', function (err, longitude, latitude) {
         if (err) {
           return done(err);
         }
 
         longitude.should.equal(-118.4104684);
-        lattitude.should.equal(34.1030032);
+        latitude.should.equal(34.1030032);
         done();
       });
     });

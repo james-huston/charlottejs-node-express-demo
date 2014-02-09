@@ -8,9 +8,15 @@ var app = express();
 //    $ PORT=8080 node index.js
 var appPort = process.env.PORT || 3000;
 
+// register EJS as our template engine and tell the server
+// where are views are at. the 2nd param to 'view engine' is
+// the extension on our view files.
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/app/views');
+
 // create a route for the root to say hello
 app.get('/', function (req, res) {
-  res.end('Hello World');
+  res.render('index', {helloTarget: 'World'});
 });
 
 // add a quick and dirty error handler

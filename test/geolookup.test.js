@@ -24,7 +24,7 @@ describe('The GeoLookup module', function () {
 
   describe('with a valid zipcode', function () {
     it('should return long/lat for a real zip', function (done) {
-      lookup('90210', function (err, longitude, latitude) {
+      lookup('90210', function (err, latitude, longitude) {
         if (err) {
           return done(err);
         }

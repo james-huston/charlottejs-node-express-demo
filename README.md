@@ -46,3 +46,10 @@ In order to use [Forecast.io's](http://forecast.io) api you must register and ge
 
 This will allow the tests and the application to access the api.
 
+## Step 6 - getweather route in our server
+We add a second route to our server here that handles a post request to get our weather data. The function that is used for handling this request is moved to it's own module under app/routes so that it doesn't clutter up our server's index file. Nothing to fancy there, take our post data, grab the zip, use our weather lookup library from step 5 to get the current weather for the zip and return it back to the browser.
+
+## Step 7 - The UI
+
+Now we setup our UI to make an ajax request with a zip and display the data coming back. We just use some jQuery and client side EJS templates to make it quick and easy even if it's not very clean. You can now [load the index](http://localhost:3000) page of the app, enter a zip, and see the weather.
+

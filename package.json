@@ -4,7 +4,7 @@
   "description": "Demo project for NodeJS intro meetup.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --require should --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,9 @@
     "ejs": "~0.8.5",
     "express": "~3.4.8",
     "superagent": "~0.16.0"
+  },
+  "devDependencies": {
+    "should": "~3.1.2",
+    "mocha": "~1.17.1"
   }
 }

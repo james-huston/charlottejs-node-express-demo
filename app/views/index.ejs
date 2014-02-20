@@ -1,0 +1,216 @@
+<html>
+
+<head>
+  <title>Weather</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+</head>
+
+<body class="container">
+  <div role="form">
+    <div class="form-group">
+      <label for="input_zipcodes">Zip Codes:</label>
+      <input type="text" class="form-control" id="input_zipcodes" placeholder="Enter Zips..." />
+    </div>
+    <div class="form-group">
+      <button class="btn btn-default" id="button_getweather" >Get the Weather!</button>
+    </div>
+  </div>
+
+  <div id="block_currentweather">
+  </div>
+
+  <script id="template_loading" type="text/html">
+    <div class="row">
+      <div class="col-md-4 text-center">
+        <strong>loading</strong>
+        <img src="/images/loading.gif" width="31" height="31" alt="loading weather data" />
+      </div>
+    </div>
+  </script>
+
+  <script id="template_current" type="text/html">
+    <div class="well bg-success col-md-4">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2>{{= currently.summary }}</h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 text-right">
+          <strong>Temp</strong>
+        </div>
+        <div class="col-md-6">
+          {{= currently.temperature }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 text-right">
+          <strong>Feels like</strong>
+        </div>
+        <div class="col-md-6">
+        {{= currently.apparentTemperature }}
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+  <script src="/js/ejs.js"></script>
+
+  <script>
+  (function (ejs, $, undefined) {
+    /*
+     * monkey patch ejs to render templates from script tags.
+     * this makes me miss angular.
+     */
+    ejs.renderTemplate = function (templateId, options) {
+      var templateElement = $('#' + templateId);
+      if (!templateElement.length) {
+        console.log('no template found', '#' + templateId);
+        return '';
+      };
+
+      var templateData = templateElement[0].innerHTML;
+      if (templateData.length) {
+        templateData = templateData.trim();
+      }
+
+      return ejs.render(templateData, options);
+    };
+
+    /*
+     * set our client side templates to have different markers
+     * so they don't conflict with the server side templates/ejs.
+     */
+    ejs.open = '{{';
+    ejs.close = '}}';
+  })(ejs, jQuery)
+  </script>
+
+  <script>
+  (function (global, $, ejs, undefined) {
+    /**
+     * Update the view to show the current weather data.
+     * @param {Object} data
+     */
+    function updateView(data) {
+      if (!data) {
+        $('#block_currentweather').show();
+        $('#block_currentweather').html('An error was encountered');
+        return;
+      }
+
+      data.currently = data.currently || {};
+
+      $('#block_currentweather')
+        .show()
+        .html(
+          ejs.renderTemplate('template_current', data)
+        );
+    };
+
+    /**
+     * Show our loading indicator
+     */
+    function showLoading() {
+      $('#block_currentweather')
+        .show()
+        .html(
+          ejs.renderTemplate('template_loading')
+        );
+    }
+
+    /**
+     * Ask the server for the weather data.
+     * @param {String} zips
+     */
+    function loadWeatherData(zips, callback) {
+      var weatherData;
+
+      showLoading();
+
+      var request = $.ajax({
+        url: "/getweather",
+        async: true,
+        type: "POST",
+        data: JSON.stringify({
+          zipcodes: zips
+        }),
+        contentType: "application/json",
+        dataType: "json",
+      });
+
+      request.done(function (resp) {
+        resp = resp || {};
+        weatherData = resp.data || {};
+        callback(undefined, weatherData);
+      });
+
+      request.fail(function () {
+        callback(new Error('failed to load weather data'));
+      });
+    }
+
+    /**
+     * Load the weather and display it.
+     * @return {[type]}
+     */
+    function getWeather() {
+      $('#block_currentweather').hide();
+      var zips = $('#input_zipcodes').val().toString();
+
+      if (zips && zips.length) {
+        loadWeatherData(zips, function (err, data) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+
+          updateView(data);
+        });
+      }
+    }
+
+    /*
+     * attach our click event
+     */
+    $('#button_getweather').click(getWeather);
+
+    /*
+     * leak some test data and methods so we can test the ui without
+     * needing to make requests. you would take this out before
+     * releasing to production.
+     */
+    global.weatherApp = {};
+    global.weatherApp.updateView = updateView;
+    global.weatherApp.showLoading = showLoading;
+    global.weatherApp.testData = {
+      "currently": {
+        "time": 1391973898,
+        "summary": "Mostly Cloudy",
+        "icon": "partly-cloudy-day",
+        "nearestStormDistance": 28,
+        "nearestStormBearing": 43,
+        "precipIntensity": 0,
+        "precipProbability": 0,
+        "temperature": 59.81,
+        "apparentTemperature": 59.81,
+        "dewPoint": 49.68,
+        "humidity": 0.69,
+        "windSpeed": 1.96,
+        "windBearing": 258,
+        "visibility": 8.86,
+        "cloudCover": 0.78,
+        "pressure": 1022.21,
+        "ozone": 283.47
+      }
+    };
+  })(window, jQuery, ejs);
+  </script>
+</body>
+</html>

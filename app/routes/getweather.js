@@ -1,5 +1,6 @@
 
 var lookupLib = require('../../lib');
+var async = require('async');
 
 module.exports = function (req, res) {
   var postData = req.body || {};
@@ -44,38 +45,57 @@ module.exports = function (req, res) {
     if (!zipArray.length) {
       console.log('invalid list of zips');
       return res.json({
-        status: 'error'
+        status: 'error',
+        error: 'no valid zips'
       });
     }
 
     var results = {};
-    var responses = 0;
 
-    var getZipData = function (zipcode) {
+    /**
+     * function for lookup up data for each of our zips
+     * @param {String} zipcode
+     * @param {Function} callback
+     */
+    var getZipData = function (zipcode, callback) {
       console.log('looking up ', zipcode);
       lookupLib.getCurrentWeather(zipcode, function (err, data) {
         console.log('got response', zipcode);
-        responses++;
 
         if (err) {
           results[zipcode] = {};
           console.log('error lookup up zipcode', zipcode, err.toString());
-          return;
+          return callback();
         }
 
         results[zipcode] = {
           currently: data
         };
 
-        if (responses === zipArray.length) {
-          return res.json({
-            status: 'ok',
-            results: zipArray.length,
-            data: results
-          });
-        }
+        return callback();
       });
-    }
+    };
+
+    /**
+     * handle the response from our async foreach
+     * @param {Object} err Error Object from one of our getZipData calls
+     */
+    var handleResults = function (err) {
+      if (err) {
+        return res.json({
+          status: 'error',
+          error: err.toString()
+        });
+      }
+
+      return res.json({
+        status: 'ok',
+        results: zipArray.length,
+        data: results
+      });
+    };
+
+    async.each(zipArray, getZipData, handleResults);
 
     zipArray.forEach(getZipData);
   }

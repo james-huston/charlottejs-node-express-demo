@@ -53,3 +53,8 @@ We add a second route to our server here that handles a post request to get our 
 
 Now we setup our UI to make an ajax request with a zip and display the data coming back. We just use some jQuery and client side EJS templates to make it quick and easy even if it's not very clean. You can now [load the index](http://localhost:3000) page of the app, enter a zip, and see the weather.
 
+## Step 8 - Multiple Zips without the async library
+
+So let's do some real async and look up multiple zips at the same time. The code added here uses callbacks directly for a handling our results and does manual tracking of responses to make sure we have them all before we continue. This works (and quite well) but we will make it a bit cleaner in the final step.
+
+It's important to not here that as you run the tests there tends to be very little time difference between a single request, 2 requests, and 5 requests. Here you can really start to see the power of async IO in node.

@@ -35,7 +35,7 @@ module.exports = function (req, res) {
     var zipArray = postData.zipcodes.split(' ');
 
     // remove anything that doesn't look like a zip
-    for (var loopy = 0; loopy < zipArray.length; loopy++) {
+    for (var loopy = 0; loopy < zipArray.length && loopy < 100; loopy++) {
       if ('string' !== typeof zipArray[loopy] || zipArray[loopy].length !== 5) {
         zipArray.splice(loopy, 1);
       }
